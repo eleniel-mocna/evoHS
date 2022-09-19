@@ -131,6 +131,7 @@ relativeMutation prob amount rnd individual =
     zipWith (\rnd value -> relativeMutation1 prob amount rnd value)
         (iterate (\x -> next (x*11)) rnd) individual
 
+-- Do relative mutation on 1 individual 
 relativeMutation1::Double->Double->Double->Double->Double
 relativeMutation1 prob amount rnd value
     | prob>rnd = value
@@ -154,6 +155,7 @@ swapTwo first second xs = zipWith (\x y ->
     else if x == second then xs !! first
     else y) [0..] xs
 
+-- Run the evolution with the given attributes
 runEvolution :: Double -> [a] -> (a->b) -> (Double -> [a] -> [b] -> [(a,a)]) -> (Double -> (a,a)->[a]) -> (Double -> a -> a) -> Int-> [a]
 runEvolution rnd population fitnessFunction parentsSelector crossover mutator epochs
     | epochs > 0 = runEvolution
@@ -166,10 +168,12 @@ runEvolution rnd population fitnessFunction parentsSelector crossover mutator ep
         (epochs-1)
     | otherwise = population
 
+-- Get the best individual and its fitness provided a population and a fitness function
 getBestIndividualFn::[a] -> (a -> Double) -> (a, Double)
 getBestIndividualFn population fitnessFunction =
     getBestIndividual population (map fitnessFunction population)
 
+-- Get the best individual and its fitness provided a population and fitnesses for each individual in the population
 getBestIndividual::[a] -> [Double] -> (a, Double)
 getBestIndividual population fitnesses =
     foldl1 (\(x0,y0) (x1, y1) -> if y0>y1 then (x0,y0) else (x1,y1)) (zip population fitnesses)
